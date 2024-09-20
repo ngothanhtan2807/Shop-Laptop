@@ -27,7 +27,7 @@ public class Category extends BaseEntity {
     private String description;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "category")
-    private List<Product> products = new ArrayList<Product>();
+    private List<Product> products = new ArrayList<>();
 
     @Column(name = "seo", nullable = false)
     private String seo;
