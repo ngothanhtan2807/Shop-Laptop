@@ -1,98 +1,90 @@
 package com.devpro.controller.admin;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.devpro.common.ProductSearch;
 import com.devpro.entities.AjaxResponse;
 import com.devpro.entities.Product;
 import com.devpro.repositories.CategoryRepo;
 import com.devpro.repositories.ProductRepo;
 import com.devpro.services.ProductService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @Controller
 public class AdminProductController {
 
-	@Autowired
-	CategoryRepo categoryRepo;
-	@Autowired
-	ProductService productService;
-	@Autowired
-	public ProductRepo productRepo;
-	
-	@RequestMapping(value = { "/admin/list-product" }, method = RequestMethod.GET)
-	public String listProduct(final ModelMap model, final HttpServletRequest request,
-			final HttpServletResponse response) throws Exception {
-		model.addAttribute("products", productRepo.findAll());
-		return "admin/product/list-product";
-	}
+    @Autowired
+    CategoryRepo categoryRepo;
+    @Autowired
+    ProductService productService;
+    @Autowired
+    ProductRepo productRepo;
 
-	@RequestMapping(value = { "/admin/add-product" }, method = RequestMethod.GET)
-	public String addProduct(final ModelMap model, final HttpServletRequest request, final HttpServletResponse response)
-			throws Exception {
-		model.addAttribute("categories", categoryRepo.findAll());
-		System.out.println("category: "+ categoryRepo.count());
-		model.addAttribute("product", new Product());
-		return "admin/product/add-product";
-	}
+    @GetMapping("/admin/list-product")
+    public String listProduct(final ModelMap model, final HttpServletRequest request,
+                              final HttpServletResponse response) {
+        model.addAttribute("products", productRepo.findAll());
+        return "admin/product/list-product";
+    }
 
-	@RequestMapping(value = { "/admin/edit-product/{seo}" }, method = RequestMethod.GET)
-	public String editProduct(@PathVariable("seo") String seo, final ModelMap model, final HttpServletRequest request,
-			final HttpServletResponse response) throws Exception {
-		
-		model.addAttribute("categories", categoryRepo.findAll());
-		ProductSearch productSearch = new ProductSearch();
-		productSearch.setSeoProduct(seo);
-		model.addAttribute("product", productService.search(productSearch).get(0));
-		return "admin/product/add-product";
-	}
+    @GetMapping("/admin/add-product")
+    public String addProduct(final ModelMap model, final HttpServletRequest request, final HttpServletResponse response) {
+        model.addAttribute("categories", categoryRepo.findAll());
+        model.addAttribute("product", new Product());
+        return "admin/product/add-product";
+    }
 
-	@RequestMapping(value = { "/admin/save-product" }, method = RequestMethod.POST)
-	public String saveProduct(@RequestParam("images") MultipartFile[] images,
-			@ModelAttribute("product") Product product, final ModelMap model, final HttpServletRequest request,
-			final HttpServletResponse response) throws Exception {
-		//them
-		productService.saveProduct(images, product,request);
+    @GetMapping("/admin/edit-product/{seo}")
+    public String editProduct(@PathVariable("seo") String seo,
+                              final ModelMap model,
+                              final HttpServletRequest request,
+                              final HttpServletResponse response) {
 
-//		return "admin/product/add-product";
-		return "redirect:/admin/list-product";
-//		adminProductService.saveProduct(productAvatars, product);
-//		return "redirect:/admin/list-products?success_from_add_product";
-	}
+        model.addAttribute("categories", categoryRepo.findAll());
+        ProductSearch productSearch = new ProductSearch();
+        productSearch.setSeoProduct(seo);
+        model.addAttribute("product", productService.search(productSearch).get(0));
+        return "admin/product/add-product";
+    }
 
-	@RequestMapping(value = { "/admin/list-product/delete-product-with-ajax/{seo}" }, method = RequestMethod.POST)
-	public ResponseEntity<AjaxResponse> subscribe(@PathVariable("seo") String seo, final ModelMap model, final HttpServletRequest request,
-			final HttpServletResponse response) throws Exception {
-		HttpSession httpSession = request.getSession();
-//		model.addAttribute("categories", categoryRepo.findAll());
-//		model.addAttribute("product", productService.findProductBySeo(seo));
+    @PostMapping("/admin/save-product")
+    public String saveProduct(@RequestParam("images") MultipartFile[] images,
+                              @ModelAttribute("product") Product product,
+                              final ModelMap model,
+                              final HttpServletRequest request,
+                              final HttpServletResponse response) throws Exception {
 
-//			String status = String.valueOf(data.getStatus());
-//			System.out.println("Status: " + status);
-		ProductSearch productSearch = new ProductSearch();
-		productSearch.setSeoProduct(seo);
-		Product products = productService.search(productSearch).get(0);
+        productService.saveProduct(images, product, request);
 
-//				System.out.println("ID:  "+products.getId());
-//				System.out.println("title :  "+products.getTitle());
-		products.setUpdatedDate(java.time.LocalDateTime.now());
+        return "redirect:/admin/list-product";
+    }
 
-		products.setPriceVN(products.getPriceVN());
-		products.setStatus(false);
-		productRepo.save(products);
+    @PostMapping("/admin/list-product/delete-product-with-ajax/{seo}")
+    public ResponseEntity<AjaxResponse> subscribe(@PathVariable("seo") String seo,
+                                                  final ModelMap model,
+                                                  final HttpServletRequest request,
+                                                  final HttpServletResponse response) {
 
-		return ResponseEntity.ok(new AjaxResponse(200, "SUCCESS"));
-	}
+        ProductSearch productSearch = new ProductSearch();
+        productSearch.setSeoProduct(seo);
+        Product products = productService.search(productSearch).get(0);
+
+        products.setUpdatedDate(java.time.LocalDateTime.now());
+
+        products.setPriceVN(products.getPriceVN());
+        products.setStatus(false);
+        productRepo.save(products);
+
+        return ResponseEntity.ok(new AjaxResponse(200, "SUCCESS"));
+    }
 }

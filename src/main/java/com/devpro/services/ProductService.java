@@ -118,7 +118,7 @@ public class ProductService {
 
 			if (product.getId() != null) { // chỉnh sửa
 				// lấy dữ liệu cũ của sản phẩm
-				Product productInDb = productRepo.findById(product.getId()).get();
+				Product productInDb = productRepo.findById(product.getId()).orElseThrow();
 
 				if (!isEmptyUploadFile(images)) { // nếu admin sửa ảnh sản phẩm
 					// lấy danh sách ảnh của sản phẩm cũ

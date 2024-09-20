@@ -1,50 +1,28 @@
 package com.devpro.entities;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "tbl_saleorder_products")
+@Getter
+@Setter
 public class SaleOrderProducts extends BaseEntity {
-	
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "product_id")
-	private Product product;
-	
-	@Column(name = "quality")
-	private Integer quantity;
 
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "saleorder_id")
-	private SaleOrder saleOrder;
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
 
-	public SaleOrder getSaleOrder() {
-		return saleOrder;
-	}
+    @Column(name = "quality")
+    private Integer quantity;
 
-	public void setSaleOrder(SaleOrder saleOrder) {
-		this.saleOrder = saleOrder;
-	}
-
-	public Product getProduct() {
-		return product;
-	}
-
-	public void setProduct(Product product) {
-		this.product = product;
-	}
-
-	public Integer getQuantity() {
-		return quantity;
-	}
-
-	public void setQuantity(Integer quantity) {
-		this.quantity = quantity;
-	}
-
-
+    @ManyToOne
+    @JoinColumn(name = "saleorder_id")
+    private SaleOrder saleOrder;
 }

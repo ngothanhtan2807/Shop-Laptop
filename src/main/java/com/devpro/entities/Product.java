@@ -1,135 +1,77 @@
 package com.devpro.entities;
 
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 @Entity
 @Table(name = "tbl_products")
+@Getter
+@Setter
 public class Product extends BaseEntity {
-	@Column(name = "title", length = 500, nullable = false)
-	private String title;
-	
-	@Column(name = "price", precision = 13, scale = 2, nullable = false)
-	private BigDecimal price;
+    @Column(name = "title", length = 500, nullable = false)
+    private String title;
 
-	@Column(name = "short_description", length = 3000, nullable = false)
-	private String shortDes;
+    @Column(name = "price", precision = 13, scale = 2, nullable = false)
+    private BigDecimal price;
 
-	@Column(name = "detail_description", length = 500, nullable = false, columnDefinition = "text")
-	private String shortDetails;
-	
-	@Transient
-	private String priceVN;
-	
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "category_id") // tên field khoá ngoại
-	private Category category;
+    @Column(name = "short_description", length = 3000, nullable = false)
+    private String shortDes;
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "product"/* tên property product trong class ProductImages */
-			, fetch = FetchType.EAGER, orphanRemoval = true)
-	private List<ProductImages> productImages = new ArrayList<ProductImages>();
+    @Column(name = "detail_description", length = 500, nullable = false, columnDefinition = "text")
+    private String shortDetails;
 
-	@Column(name = "seo", nullable = false)
-	private String seo;
+    @Transient
+    private String priceVN;
 
-	/**
-	 * Thêm ảnh vào sản phẩm.
-	 * 
-	 * @param _productImages
-	 */
-	public void addProductImages(ProductImages productImages1) {
-		productImages1.setProduct(this);
-		productImages.add(productImages1);
-	}
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "category_id") // tên field khoá ngoại
+    private Category category;
 
-	public void clearProductImages() {
-		for (ProductImages productImages : productImages) {
-			productImages.setProduct(null);
-		}
-		productImages.clear();
-	}
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product"
+            , fetch = FetchType.EAGER, orphanRemoval = true)
+    private List<ProductImages> productImages = new ArrayList<ProductImages>();
 
-	public String getTitle() {
-		return title;
-	}
+    @Column(name = "seo", nullable = false)
+    private String seo;
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
-	public BigDecimal getPrice() {
-		return price;
-	}
+    public void addProductImages(ProductImages productImages1) {
+        productImages1.setProduct(this);
+        productImages.add(productImages1);
+    }
 
-	public void setPrice(BigDecimal price) {
-		this.price = price;
-	}
+    public void clearProductImages() {
+        for (ProductImages productImages : productImages) {
+            productImages.setProduct(null);
+        }
+        productImages.clear();
+    }
 
-	public String getShortDes() {
-		return shortDes;
-	}
+    @Transient
+    public String getPriceVN() {
+        Locale locale = new Locale("vi", "VN");
+        NumberFormat fmt = NumberFormat.getCurrencyInstance(locale);
+        return fmt.format(price);
+    }
 
-	public void setShortDes(String shortDes) {
-		this.shortDes = shortDes;
-	}
-
-	public String getShortDetails() {
-		return shortDetails;
-	}
-
-	public void setShortDetails(String shortDetails) {
-		this.shortDetails = shortDetails;
-	}
-
-	public String getSeo() {
-		return seo;
-	}
-
-	public void setSeo(String seo) {
-		this.seo = seo;
-	}
-
-	public Category getCategory() {
-		return category;
-	}
-
-	public void setCategory(Category category) {
-		this.category = category;
-	}
-
-	public List<ProductImages> getProductImages() {
-		return productImages;
-	}
-
-	public void setProductImages(List<ProductImages> productImages) {
-		this.productImages = productImages;
-	}
-	
-	@Transient
-	public String getPriceVN() {
-		Locale locale = new Locale("vi", "VN");
-		NumberFormat fmt = NumberFormat.getCurrencyInstance(locale);
-		return fmt.format(price);
-	}
-	
-	@Transient
-	public void setPriceVN(String priceVN) {
-		this.priceVN = priceVN;
-	}
+    @Transient
+    public void setPriceVN(String priceVN) {
+        this.priceVN = priceVN;
+    }
 
 
 }

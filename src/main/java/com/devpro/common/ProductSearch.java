@@ -1,14 +1,9 @@
 package com.devpro.common;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.devpro.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.devpro.entities.Product;
-import com.devpro.services.ProductService;
+import javax.servlet.http.HttpServletRequest;
 
 public class ProductSearch {
 	public static int SIZE_ITEMS_ON_PAGE = 8;
@@ -21,13 +16,13 @@ public class ProductSearch {
 	private String keyword;
 	private String typePrice;
 	private int statusProduct;
-	@Autowired ProductService productService;
+	@Autowired
+	ProductService productService;
 	
 	public void parseRequest(final HttpServletRequest request) { // phân trang
 		Integer currentPage = null;
 
-		String strPage = request.getParameter("page");	
-		System.out.println(request);
+		String strPage = request.getParameter("page");
 		if (strPage != null && !strPage.isEmpty()) {
 			currentPage = Integer.parseInt(strPage);
 		}
